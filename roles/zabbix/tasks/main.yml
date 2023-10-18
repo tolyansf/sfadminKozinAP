@@ -1,0 +1,49 @@
+---
+- name: remove zabbix-agent
+  shell: apt-get remove --purge zabbix-agent -y 
+  when:
+    ansible_os_family == "Debian"
+
+- name: Remove dependencies that are no longer required
+  ansible.builtin.apt:
+    autoremove: yes
+  when:
+    ansible_os_family == "Debian"
+
+
+- name: copy agent to ubuntu
+  copy:
+    src: zabbix-release_6.2-4+ubuntu20.04_all.deb
+    dest: /tmp/
+  when:
+    ansible_os_family == "Debian"
+
+- name: install an agent .deb package
+  ansible.builtin.apt:
+    deb: /tmp/zabbix-release_6.2-4+ubuntu20.04_all.deb
+  when:
+    ansible_os_family == "Debian"
+
+- name: apt update
+  ansible.builtin.apt:
+    update_cache: yes
+  when:
+    ansible_os_family == "Debian"
+
+- name: Install zabbix-agent on ubuntu
+  ansible.builtin.apt:
+    name: zabbix-agent
+    state: latest
+  when:
+    ansible_os_family == "Debian"
+
+- name: copy agent config
+  template:
+    src: zabbix_agentd.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+
+- name: start zabbix-agent
+  systemd:
+    name: zabbix-agent
+    enabled: yes
+    state: restarted

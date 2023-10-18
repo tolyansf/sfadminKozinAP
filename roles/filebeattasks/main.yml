@@ -1,0 +1,17 @@
+---
+  - name: copy filebeat
+    copy:
+      src: filebeat-7.17.8-amd64.deb
+      dest: /tmp/
+
+  - name: install filebeat
+    ansible.builtin.apt:
+      deb: /tmp/filebeat-7.17.8-amd64.deb
+    when:
+      ansible_os_family == "Debian"
+
+  - name: enable and start filebeat service
+    systemd:
+      name: filebeat
+      state: started
+      enabled: yes

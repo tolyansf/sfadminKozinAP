@@ -1,0 +1,47 @@
+---
+    - name: "Import key"
+      shell:
+        cmd: "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv B00A0BD1E2C63C11"
+
+    - name: "Add repository contents"
+      shell:
+        cmd: 'echo "deb [arch=amd64] http://repo.mongodb.org/apt/ubuntu $(lsb_release -sc)/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org.list'
+
+    - name: "Apt update"
+      shell:
+        cmd: "apt update"
+
+    - name: "Install packages"
+      apt: "name={{ item }} state=present"
+      with_items:
+        - mongodb-org
+
+    - name: "Enable and start mongodb service"
+      systemd:
+        name: mongod
+        state: started
+        enabled: yes
+
+    - name: "Copy Elasticsearch"
+      copy:
+        src: elasticsearch-7.17.8-amd64.deb
+        dest: /tmp/
+
+    - name: "Install Elasticsearch"
+      ansible.builtin.apt:
+        deb: /tmp/elasticsearch-7.17.8-amd64.deb
+      when:
+        ansible_os_family == "Debian"
+
+    - name: "Create Dir and file for Elastic"
+      shell:
+        cmd: "mkdir -p /etc/elasticsearch/jvm.options.d && touch /etc/elasticsearch/jvm.options.d/xms"
+    - name: "Echo for elastic"
+      shell:
+        cmd: "echo $'-Xms4g\n-Xmx4g' >> /etc/elasticsearch/jvm.options.d/xms"
+
+    - name: "Enable and start Elastic"
+      systemd: 
+        name: elasticsearch
+        state: started
+        enabled: yes

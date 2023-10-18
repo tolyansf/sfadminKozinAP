@@ -1,0 +1,13 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: latest
+  when:
+    ansible_os_family == "Debian"
+
+- name: enable and start nginx service
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started

@@ -1,0 +1,21 @@
+---
+  - name: Script for configuring time and locale
+    hosts: all
+    become: true
+    remote_user: istudmask
+    gather_facts: true
+
+    vars:
+      locale1: ru_RU.UTF-8
+      locale2: en_US.UTF-8
+      time_zone: Europe/Moscow
+
+    tasks:
+
+    - name: "Time"
+      shell:
+        cmd: "timedatectl set-timezone {{time_zone}}"
+
+    - name: "Locale settings"
+      shell:
+        cmd: 'locale-gen {{locale1}} && update-locale LANG={{locale2}} LC_TIME="{{locale1}}"'

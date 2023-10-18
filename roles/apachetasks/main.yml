@@ -1,0 +1,17 @@
+---
+- name: Install apache
+  ansible.builtin.apt:
+    name: apache2
+    state: latest
+  when:
+    ansible_os_family == "Debian"
+
+- name: change port to 8080
+  shell: sed -i 's/Listen\ 80/Listen\ 8080/' /etc/apache2/ports.conf
+  ignore_errors: yes
+
+- name: enable and start apache2 service
+  systemd:
+    name: apache2
+    enabled: yes
+    state: started

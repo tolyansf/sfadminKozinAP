@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: true
+  remote_user: istudmask
+  gather_facts: true
+  roles:
+    - filebeat

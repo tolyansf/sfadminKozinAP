@@ -1,0 +1,11 @@
+---
+  - name: copy kibana
+    copy:
+      src: kibana-7.17.8-amd64.deb
+      dest: /tmp/
+
+  - name: install kibana
+    ansible.builtin.apt:
+      deb: /tmp/kibana-7.17.8-amd64.deb
+    when:
+      ansible_os_family == "Debian"
